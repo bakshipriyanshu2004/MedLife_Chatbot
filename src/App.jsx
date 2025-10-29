@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { askGemini } from './lib/gemini'
+import { askGemini, isConfigured } from './lib/gemini'
 
 function App() {
   const [messages, setMessages] = useState(() => ([
@@ -56,6 +56,11 @@ function App() {
           </div>
           <a className="text-xs text-white/60 hover:text-white transition-colors" href="https://ai.google.dev/gemini-api/" target="_blank" rel="noreferrer">Powered by Gemini</a>
         </div>
+        {!isConfigured && (
+          <div className="max-w-5xl mx-auto mt-3 text-xs sm:text-sm text-yellow-300/90">
+            Missing API key. Create a <span className="font-mono">.env</span> with <span className="font-mono">VITE_GEMINI_API_KEY=your_key</span> and restart the dev server.
+          </div>
+        )}
       </header>
 
       <main className="flex-1 px-3 sm:px-6">
@@ -99,7 +104,7 @@ function App() {
               />
               <button
                 onClick={handleSend}
-                disabled={!canSend}
+                disabled={!canSend || !isConfigured}
                 className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${canSend ? 'bg-neon-purple/30 hover:bg-neon-purple/40 text-white shadow-neon border border-neon-purple/40' : 'bg-white/10 text-white/50 border border-white/10 cursor-not-allowed'}`}
               >
                 Send

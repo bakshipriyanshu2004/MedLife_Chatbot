@@ -1,15 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+export const isConfigured = Boolean(apiKey);
 
-if (!apiKey) {
-  // Provide a clear runtime error to help developers set up the env var
-  // This will only throw when the function is first imported/executed without a key.
-  // eslint-disable-next-line no-throw-literal
-  throw new Error("Missing VITE_GEMINI_API_KEY. Create a .env file and set your key.");
+let genAI = null;
+if (isConfigured) {
+  genAI = new GoogleGenerativeAI(apiKey);
 }
-
-const genAI = new GoogleGenerativeAI(apiKey);
 
 const MODEL_NAME = "gemini-1.5-flash"; // fast and capable for chat
 
@@ -26,6 +23,9 @@ Important rules:
 
 export async function askGemini(userMessages) {
   // userMessages: array of {role: 'user'|'model', content: string}
+  if (!isConfigured) {
+    return "Configuration missing: Set VITE_GEMINI_API_KEY in a .env file and restart the app.";
+  }
   const model = genAI.getGenerativeModel({ model: MODEL_NAME, systemInstruction: SYSTEM_PROMPT });
 
   // Build contents as per Gemini chat format
