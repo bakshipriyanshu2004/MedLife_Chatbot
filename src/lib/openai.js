@@ -23,7 +23,7 @@ Rules:
 
 export async function askOpenAI(userMessages) {
   if (!isConfigured) {
-    return "Configuration missing: Set VITE_OPENAI_API_KEY in a .env file or paste your key using the banner form.";
+    return "Configuration missing: Set VITE_OPENAI_API_KEY";
   }
 
   const messages = [
