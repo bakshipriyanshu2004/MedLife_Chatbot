@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { askGemini, isConfigured, setRuntimeApiKey } from './lib/gemini'
+import { askOpenAI as askModel, isConfigured, setRuntimeApiKey } from './lib/openai'
 
 function App() {
   const [messages, setMessages] = useState(() => ([
@@ -25,7 +25,7 @@ function App() {
     setMessages(next)
     setLoading(true)
     try {
-      const reply = await askGemini(next)
+      const reply = await askModel(next)
       setMessages(prev => [...prev, { role: 'model', content: reply || "Sorry, I couldn’t generate a response this time." }])
     } catch (err) {
       setMessages(prev => [...prev, { role: 'model', content: "I ran into a problem. Please check your internet connection or API key and try again." }])
@@ -54,12 +54,12 @@ function App() {
               <div className="text-xs text-white/60 -mt-1">General medical info assistant</div>
             </div>
           </div>
-          <a className="text-xs text-white/60 hover:text-white transition-colors" href="https://ai.google.dev/gemini-api/" target="_blank" rel="noreferrer">Powered by Gemini</a>
+          <a className="text-xs text-white/60 hover:text-white transition-colors" href="https://platform.openai.com/" target="_blank" rel="noreferrer">Powered by OpenAI</a>
         </div>
         {!isConfigured && (
           <div className="max-w-5xl mx-auto mt-3">
             <div className="text-xs sm:text-sm text-yellow-300/90 mb-2">
-              Missing API key. Create a <span className="font-mono">.env</span> with <span className="font-mono">VITE_GEMINI_API_KEY=your_key</span> and restart the dev server, or paste your key below.
+              Missing API key. Create a <span className="font-mono">.env</span> with <span className="font-mono">VITE_OPENAI_API_KEY=your_key</span> and restart the dev server, or paste your key below.
             </div>
             <KeyInlineForm />
           </div>
@@ -133,7 +133,7 @@ function KeyInlineForm() {
         <input
           value={k}
           onChange={(e) => setK(e.target.value)}
-          placeholder="Paste your Gemini API key"
+          placeholder="Paste your OpenAI API key"
           className="flex-1 bg-transparent outline-none text-xs sm:text-sm px-2 py-2 placeholder:text-white/40"
         />
         <button
