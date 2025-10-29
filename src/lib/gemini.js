@@ -1,11 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-export const isConfigured = Boolean(apiKey);
+// Prefer build-time env; fall back to a runtime key stored in localStorage
+const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+const runtimeKey = (() => {
+  try { return localStorage.getItem('medlife_api_key') || undefined } catch { return undefined }
+})();
+const effectiveKey = envKey || runtimeKey;
+
+export const isConfigured = Boolean(effectiveKey);
 
 let genAI = null;
 if (isConfigured) {
-  genAI = new GoogleGenerativeAI(apiKey);
+  genAI = new GoogleGenerativeAI(effectiveKey);
 }
 
 const MODEL_NAME = "gemini-1.5-flash"; // fast and capable for chat
@@ -34,6 +40,16 @@ export async function askGemini(userMessages) {
   const response = await model.generateContent({ contents });
   const text = response.response?.text?.() ?? response.response?.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") ?? "";
   return text.trim();
+}
+
+export function setRuntimeApiKey(key) {
+  try {
+    if (!key || typeof key !== 'string') return false;
+    localStorage.setItem('medlife_api_key', key.trim());
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 

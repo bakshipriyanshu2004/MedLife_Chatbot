@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { askGemini, isConfigured } from './lib/gemini'
+import { askGemini, isConfigured, setRuntimeApiKey } from './lib/gemini'
 
 function App() {
   const [messages, setMessages] = useState(() => ([
@@ -57,8 +57,11 @@ function App() {
           <a className="text-xs text-white/60 hover:text-white transition-colors" href="https://ai.google.dev/gemini-api/" target="_blank" rel="noreferrer">Powered by Gemini</a>
         </div>
         {!isConfigured && (
-          <div className="max-w-5xl mx-auto mt-3 text-xs sm:text-sm text-yellow-300/90">
-            Missing API key. Create a <span className="font-mono">.env</span> with <span className="font-mono">VITE_GEMINI_API_KEY=your_key</span> and restart the dev server.
+          <div className="max-w-5xl mx-auto mt-3">
+            <div className="text-xs sm:text-sm text-yellow-300/90 mb-2">
+              Missing API key. Create a <span className="font-mono">.env</span> with <span className="font-mono">VITE_GEMINI_API_KEY=your_key</span> and restart the dev server, or paste your key below.
+            </div>
+            <KeyInlineForm />
           </div>
         )}
       </header>
@@ -119,3 +122,31 @@ function App() {
 }
 
 export default App
+
+function KeyInlineForm() {
+  const [k, setK] = useState("")
+  const [ok, setOk] = useState(false)
+  const [err, setErr] = useState("")
+  return (
+    <div className="glass rounded-xl p-2 sm:p-3 border border-yellow-300/20">
+      <div className="flex items-center gap-2">
+        <input
+          value={k}
+          onChange={(e) => setK(e.target.value)}
+          placeholder="Paste your Gemini API key"
+          className="flex-1 bg-transparent outline-none text-xs sm:text-sm px-2 py-2 placeholder:text-white/40"
+        />
+        <button
+          onClick={() => {
+            const saved = setRuntimeApiKey(k)
+            if (saved) { setOk(true); setErr("") } else { setErr("Could not save key (storage disabled?)") }
+          }}
+          className="px-3 py-2 rounded-md text-xs sm:text-sm bg-neon-green/30 border border-neon-green/40 hover:bg-neon-green/40"
+        >Save</button>
+      </div>
+      {ok && <div className="text-[11px] sm:text-xs text-neon-green mt-1">Key saved. Reloading...</div>}
+      {ok && setTimeout(() => window.location.reload(), 400)}
+      {err && <div className="text-[11px] sm:text-xs text-red-300 mt-1">{err}</div>}
+    </div>
+  )
+}
