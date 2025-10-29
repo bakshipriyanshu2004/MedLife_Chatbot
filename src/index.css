@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 18 18 24;
+  --card: 26 26 36;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-[rgb(var(--bg))] text-white font-sans antialiased;
+  background-image:
+    radial-gradient(1000px 400px at 80% -10%, rgba(77,210,255,0.15), transparent),
+    radial-gradient(800px 320px at 10% 120%, rgba(155,92,255,0.12), transparent),
+    linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-md border border-white/10;
+}
+
+.neon-text {
+  text-shadow: 0 0 15px rgba(77,210,255,0.6), 0 0 30px rgba(155,92,255,0.35);
+}
